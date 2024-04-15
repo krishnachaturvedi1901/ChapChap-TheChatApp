@@ -1,7 +1,9 @@
-import { Box, Card, Stack } from "@mui/material";
+import { Box, Button, Card, Stack } from "@mui/material";
 import { GoogleLogin } from "@react-oauth/google";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../config/axios.config";
+import { config } from "../config/config";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -39,15 +41,13 @@ const Home = () => {
       >
         Signup
       </Card>
-      <GoogleLogin
-        onSuccess={(credentialResponse) => {
-          console.log(credentialResponse);
+      <Button
+        onClick={() => {
+          window.open(`${config.api_url}/auth/google`, "_self");
         }}
-        onError={() => {
-          console.log("Login Failed");
-        }}
-        useOneTap
-      />
+      >
+        Google signin
+      </Button>
 
       <Card
         sx={{

@@ -4,15 +4,21 @@ import bcrypt from "bcrypt";
 
 UserSchema.pre("save", async function (next) {
   try {
-    const hash = await bcrypt.hash(this.password, 10);
-    this.password = hash;
+    if (this.password) {
+      const hash = await bcrypt.hash(this.password, 10);
+      this.password = hash;
+    }
   } catch (error) {
     next(error);
   }
 });
 
 UserSchema.methods.verifyPassword = async function (inputPassword) {
-  return await bcrypt.compare(inputPassword, this.password);
+  if (this.password) {
+    return await bcrypt.compare(inputPassword, this.password);
+  } else {
+    return false;
+  }
 };
 
 export const UserModel = mongoose.model("Users", UserSchema);

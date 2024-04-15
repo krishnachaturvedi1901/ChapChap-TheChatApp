@@ -167,14 +167,15 @@ export async function loginHandler(req, res, next) {
 }
 
 export function logoutHandler(req, res) {
-  const serializedRefreshToken = serializeToken("refreshToken", null, {
-    httpOnly: true,
-    secure: false /* process.env.NODE_ENV === "production" only allow https and not http */,
-    sameSite: "strict",
-    maxAge: -1,
-    path: "/",
+  console.log("req.session before destry-", req.session);
+  req.logout(function (err) {
+    console.log("err from req.logout", err);
+    if (err) {
+      return next(err);
+    }
   });
-  res.setHeader("Set-Cookie", serializedRefreshToken);
+  console.log("req.session after destry-", req.session);
+
   res.status(200).json({
     status: "success",
     message: "Logged out",

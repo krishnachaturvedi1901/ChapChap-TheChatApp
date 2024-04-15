@@ -2,6 +2,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { UserModel } from "../models/UsersModel.mjs";
 import passport from "passport";
 import { config } from "../config/config.mjs";
+import { OAuthUserModel } from "../models/OauthUserModel.mjs";
 
 const googleAuthStrategy = new GoogleStrategy(
   {
@@ -10,10 +11,48 @@ const googleAuthStrategy = new GoogleStrategy(
     callbackURL: "http://localhost:8080/auth/google/callback",
     scope: ["profile", "email"],
   },
-  (accessToken, refreshToken, profile, cb) => {
-    UserModel.findOrCreate({ googleId: profile.id }, (err, user) => {
-      return cb(err, user);
-    });
+  async (accessToken, refreshToken, profile, cb) => {
+    console.log("inGoogleFUnc-", profile);
+    try {
+      let userAlready = await UserModel.findOne({
+        email: profile?.emails[0].value,
+      });
+      let userInOauth = await OAuthUserModel.findOne({
+        provider: "google",
+        userOauthId: profile?.id,
+      });
+      if (userAlready && !userInOauth) {
+        userInOauth = await OAuthUserModel.create({
+          provider: "google",
+          userOauthId: profile.id,
+          userId: userAlready._id,
+          userEmail: profile?.emails[0].value,
+        });
+        return cb(false, userAlready);
+      } else if (!userAlready && !userInOauth) {
+        userAlready = await UserModel.create({
+          name: profile?.displayName,
+          email: profile?.emails[0].value,
+        });
+        userInOauth = await OAuthUserModel.create({
+          provider: "google",
+          userOauthId: profile?.id,
+          userId: userAlready?._id,
+          userEmail: profile?.emails[0].value,
+        });
+        return cb(false, userAlready);
+      } else if (!userAlready && userInOauth) {
+        userAlready = await UserModel.create({
+          name: profile?.displayName,
+          email: profile?.emails[0].value,
+        });
+        return cb(false, userAlready);
+      }
+      return cb(false, userAlready);
+    } catch (error) {
+      console.log("Error from passport.js file-", error);
+      return cb(error);
+    }
   }
 );
 

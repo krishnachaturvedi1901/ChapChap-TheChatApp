@@ -11,6 +11,8 @@ import { authorize } from "../middlewares/auth.mjs";
 import { schemaValidator } from "../middlewares/schemaValidator.mjs";
 import { authorizeRefreshToken } from "../middlewares/verifyRefreshToken.mjs";
 import passport from "passport";
+import createHttpError from "http-errors";
+import { config } from "../config/config.mjs";
 
 export const authRoute = express.Router();
 
@@ -32,28 +34,19 @@ authRoute.post(
   registerEmailPassword
 );
 authRoute.post("/login", loginHandler);
-authRoute.delete("/logout", logoutHandler);
 authRoute.get("/renewToken", authorizeRefreshToken, renewTokenHandler);
 
-authRoute.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
+authRoute.get("/google", passport.authenticate("google"));
 
 authRoute.get(
   "/google/callback",
   passport.authenticate("google", {
-    successRedirect: "/auth/protected",
-    failureRedirect: "/auth/login",
+    successRedirect: config.clientUrl_onLoginSuccess,
+    failureRedirect: config.clientUrl_onLoginFailure,
   })
-  // function (req, res) {
-  //   // Successful authentication, redirect dashboard.
-  //   console.log("after success login in google-", req?.user);
-  //   res.redirect("/dashboard");
-  // }
 );
 
-authRoute.get("/protected", (req, res) => {
-  console.log("In protected route-", req.user);
-  res.send(200);
+authRoute.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect(config.clientUrl_onLoginFailure);
 });
