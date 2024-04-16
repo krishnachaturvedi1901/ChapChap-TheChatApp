@@ -12,7 +12,14 @@ const googleAuthStrategy = new GoogleStrategy(
     scope: ["profile", "email"],
   },
   async (accessToken, refreshToken, profile, cb) => {
-    console.log("inGoogleFUnc-", profile);
+    console.log(
+      "inGoogleFUnc-",
+      profile,
+      "accessToken from goog",
+      accessToken,
+      "refToken from goog",
+      refreshToken
+    );
     try {
       let userAlready = await UserModel.findOne({
         email: profile?.emails[0].value,

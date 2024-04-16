@@ -12,8 +12,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-passport.use(googleAuthStrategy);
-
 app.use(
   session({
     secret: "keyboard-cat",
@@ -22,6 +20,7 @@ app.use(
     cookie: { secure: config.node_env === "production" },
   })
 );
+passport.use(googleAuthStrategy);
 app.use(passport.initialize());
 app.use(passport.session());
 

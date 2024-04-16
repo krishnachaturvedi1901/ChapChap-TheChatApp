@@ -7,6 +7,7 @@ import useRefreshToken from "../../hooks/useRefreshToken";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { Alert, Snackbar } from "@mui/material";
+import axios from "../../config/axios.config";
 
 export const AuthGuard = ({ children }) => {
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -24,6 +25,38 @@ export const AuthGuard = ({ children }) => {
   //     console.log(":error after refresh in guard-", error);
   //   }
   // };
+
+  const getSession = async () => {
+    try {
+      const res = await axios("/auth/getSession");
+      console.log("res after getting session-", res);
+      return res.data;
+    } catch (error) {
+      console.log("error after getting sesson-", error?.response?.data);
+      throw new Error(error?.response?.data?.error);
+    }
+  };
+  const isAuthenticated = async () => {
+    try {
+      const isAuthenticated = await getSession();
+      console.log("isAuthenticated", isAuthenticated);
+      return isAuthenticated;
+    } catch (error) {
+      console.log("error in isAuthenticated", error);
+      return false;
+    }
+  };
+
+  const redirectToDashboard = async () => {
+    if (await isAuthenticated()) {
+      return children;
+    } else {
+      return <Navigate to={"/"} />;
+    }
+  };
+  useEffect(() => {
+    redirectToDashboard();
+  }, []);
 
   if (accessToken) {
     const { isTokenValid } = jwtDataDecoder(accessToken);

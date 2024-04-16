@@ -153,8 +153,27 @@ const Login = () => {
                   <Button
                     disabled={loading === LOADING_ENUMS.LOAD_PENDING}
                     type="submit"
-                    variant="contained"
-                    sx={{ width: "100%" }}
+                    sx={{
+                      cursor: "pointer",
+                      border: 0,
+                      textAlign: "center",
+                      borderRadius: 2,
+                      fontWeight: 600,
+                      margin: "20px 0px",
+                      width: "100%",
+                      padding: "10px 20px",
+                      boxShadow: "0 0 20px rgba(104, 85, 224, 0.2)",
+                      transition: "0.4s",
+                      color: "rgb(104, 85, 224)",
+                      backgroundColor: "rgba(255, 255, 255, 1)",
+                      border: "1px solid rgba(104, 85, 224, 1)",
+
+                      "&:hover": {
+                        color: "white",
+                        boxShadow: "0 0 20px rgba(104, 85, 224, 0.6)",
+                        backgroundColor: "rgba(104, 85, 224, 1)",
+                      },
+                    }}
                   >
                     Login
                   </Button>
