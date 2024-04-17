@@ -41,33 +41,47 @@ authRoute.get("/google", passport.authenticate("google"));
 authRoute.get(
   "/google/callback",
   passport.authenticate("google", {
-    // successRedirect: config.clientUrl_onLoginSuccess,
     failureRedirect: config.clientUrl_onLoginFailure,
   }),
   (req, res) => {
-    req.session.isAuthenticatedByOauth = true;
-    console.log("req.session-in /google/callback->", req.session);
     res.redirect(config.clientUrl_onLoginSuccess);
   }
 );
 authRoute.get("/getSession", (req, res, next) => {
+  console.log("req in /getSession-", req.session, "<--req-- from /getSession");
   console.log("req.session-in /getSession->", req.sessionStore?.sessions);
 
   if (req.sessionStore?.sessions) {
     console.log("keyyy-", Object.keys(req.sessionStore.sessions)[0]);
-    const sessionData =
+    const sessionDataStringify =
       req.sessionStore.sessions[Object.keys(req.sessionStore.sessions)[0]];
-    console.log("sessionData--/getSession--", sessionData);
-    const isAuthenticatedByOauth = sessionData["isAuthenticatedByOauth"];
-    console.log("isAuthKEy-", isAuthenticatedByOauth);
-    return res.status(200).send({
-      isAuthenticatedByOauth,
-    });
+    if (sessionDataStringify) {
+      const sessionData = JSON.parse(sessionDataStringify);
+      console.log("sessionData--/getSession--", sessionData);
+      console.log("isPassport-", sessionData?.passport?.user);
+      const user = sessionData?.passport?.user;
+      if (user?._id) {
+        return res.status(200).send({
+          isAuthorize: true,
+          user,
+        });
+      }
+    }
   }
-
-  return next(createHttpError.Unauthorized("Session expires"));
+  return next(createHttpError.Unauthorized("Session expires login again"));
 });
-authRoute.get("/logout", (req, res) => {
-  req.logout();
+
+authRoute.delete("/logout", (req, res, next) => {
+  console.log("req.logout called-", req, "<-req from /logout");
+  console.log("req.session-", req.session);
+
+  console.log("sessionId-", sessionId);
+  req.logout((err) => {
+    if (err) {
+      console.log("err from logut", err);
+      next(err);
+    }
+    res.status(200).send({ message: "Logout successfull" });
+  });
   res.redirect(config.clientUrl_onLoginFailure);
 });

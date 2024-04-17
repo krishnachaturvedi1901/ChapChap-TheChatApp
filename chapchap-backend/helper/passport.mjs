@@ -11,6 +11,8 @@ const googleAuthStrategy = new GoogleStrategy(
     callbackURL: "http://localhost:8080/auth/google/callback",
     scope: ["profile", "email"],
   },
+  /* Note that since we just want the "Google" profile information after log in, we will return cb(null, profile) 
+i.e. cb  (<no error>, <return "google" profile to serializeUser()>)*/
   async (accessToken, refreshToken, profile, cb) => {
     console.log(
       "inGoogleFUnc-",
@@ -64,10 +66,18 @@ const googleAuthStrategy = new GoogleStrategy(
 );
 
 passport.serializeUser((user, done) => {
+  /*The serializeUser() attaches the {authenticated_user} 
+  object to end of “req.session.passport”
+  i.e. req.session.passport.user.{authenticated_user}*/
+  console.log("sterilizeUser called", user);
   done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
+  /*The deserializeUser() reads the {authenticated_user} object from the 
+    “req.session.passport.user.{authenticated_user}”,
+   and attaches it to “req.user” i.e. req.user.{authenticated_user}*/
+  console.log("DeSterilizeUser called", user);
   done(null, user);
 });
 

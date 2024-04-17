@@ -7,11 +7,12 @@ import createHttpError from "http-errors";
 import passport from "passport";
 import session from "express-session";
 import googleAuthStrategy from "./helper/passport.mjs";
+import { default as cookieParser } from "cookie-parser";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use(cookieParser());
 app.use(
   session({
     secret: "keyboard-cat",
@@ -20,9 +21,9 @@ app.use(
     cookie: { secure: config.node_env === "production" },
   })
 );
-passport.use(googleAuthStrategy);
-app.use(passport.initialize());
+// app.use(passport.initialize());
 app.use(passport.session());
+passport.use(googleAuthStrategy);
 
 app.use("/auth", authRoute);
 

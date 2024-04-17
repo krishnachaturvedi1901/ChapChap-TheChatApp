@@ -117,6 +117,18 @@ const Home = () => {
       >
         Signin with Facebook
       </Box>
+      <Button
+        onClick={async () => {
+          try {
+            const res = await axios.delete("/auth/logout");
+            console.log("res from logout-", res);
+          } catch (error) {
+            console.log("error from logout-", error);
+          }
+        }}
+      >
+        Logout
+      </Button>
     </Stack>
   );
 };

@@ -155,7 +155,6 @@ const Login = () => {
                     type="submit"
                     sx={{
                       cursor: "pointer",
-                      border: 0,
                       textAlign: "center",
                       borderRadius: 2,
                       fontWeight: 600,
