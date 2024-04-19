@@ -11,13 +11,14 @@ import axios from "../../config/axios.config";
 import useAuth from "../../hooks/useAuth";
 
 export const AuthGuard = ({ children }) => {
-  const { setAuth } = useAuth();
+  const { auth, setAuth } = useAuth();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { requestStatus } = useSelector((state) => state.loginState);
   const [isAllowedByOauth, setIsAllowedByOauth] = useState("");
   const refresh = useRefreshToken();
   const accessToken = JSON.parse(localStorage.getItem(TOKEN_ENUMS.ACCESSTOKEN));
   console.log("accessToekn in gueard-", accessToken);
+  const { isTokenValid } = jwtDataDecoder(accessToken);
 
   // const renewAccessToken = async () => {
   //   try {
@@ -51,7 +52,6 @@ export const AuthGuard = ({ children }) => {
       }
     } catch (error) {
       console.log("error in isAuthenticated", error);
-      return false;
     }
   };
 
@@ -59,16 +59,8 @@ export const AuthGuard = ({ children }) => {
     isAuthenticated();
   }, []);
 
-  if (accessToken) {
-    const { isTokenValid } = jwtDataDecoder(accessToken);
-    if (isAllowedByOauth === "isAllowed" || isTokenValid) {
-      return children;
-    }
-    if (isAllowedByOauth === "notAllowed") {
-      console.log("InElse");
-      return <Navigate to={"/"} />;
-    }
-  } else {
-    return <Navigate to={"/"} />;
+  if (auth?.isAuthorize || isAllowedByOauth === "isAllowed" || isTokenValid) {
+    return children;
   }
+  return <Navigate to={"/"} />;
 };
