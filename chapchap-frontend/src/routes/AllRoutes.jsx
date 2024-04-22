@@ -1,15 +1,15 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Signup from "../pages/Signup";
-import Home from "../pages/Home";
 import PersonalDetails from "../components/SignupCompo/PersonalDetails";
 import CompanyDetails from "../components/SignupCompo/CompanyDetails";
 import CreateEmailPassword from "../components/SignupCompo/CreateEmailPassword";
-import Login from "../pages/Login";
-import Dashboard from "../pages/Dashboard/Dashboard";
 import EmailPassGuard from "./Guards/EmailPassGuard";
 import CompanyGuard from "./Guards/CompanyGuard";
 import { AuthGuard } from "./Guards/AuthGuard";
+import Home from "../pages/Home/Home";
+import Login from "../components/HomeCompo/Login";
+import Signup from "../components/HomeCompo/Signup";
+import ChatPage from "../pages/ChatPage/ChatPage";
 
 const AllRoutes = () => {
   return (
@@ -36,10 +36,10 @@ const AllRoutes = () => {
         />
       </Route>
       <Route
-        path="/dashboard"
+        path="/chat"
         element={
           <AuthGuard>
-            <Dashboard />
+            <ChatPage />
           </AuthGuard>
         }
       />

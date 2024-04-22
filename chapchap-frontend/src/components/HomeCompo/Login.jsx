@@ -15,15 +15,18 @@ import {
   createTheme,
 } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
-import { loginUserReqAction } from "../store/State/login/loginSlice";
-import { LOADING_ENUMS } from "../enums/enums";
+import { loginUserReqAction } from "../../store/State/login/loginSlice";
+import { LOADING_ENUMS } from "../../enums/enums";
+import useAuth from "../../hooks/useAuth";
 
 const Login = () => {
+  const { auth, setAuth } = useAuth();
   const dispatch = useDispatch();
   const {
     loading,
     error: stateError,
     requestStatus,
+    user,
   } = useSelector((state) => state.loginState);
   const navigate = useNavigate();
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
@@ -90,9 +93,10 @@ const Login = () => {
   };
   React.useEffect(() => {
     if (loading === LOADING_ENUMS.LOAD_SUCCEDED) {
+      setAuth({ ...auth, isAuthorize: true, user: user });
       setSnackbarOpen(true);
       const timer = setTimeout(() => {
-        navigate("/dashboard");
+        navigate("/chat");
         return () => clearTimeout(timer);
       }, 2000);
     }

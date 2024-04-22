@@ -1,13 +1,20 @@
 import { Box, Button, Card, Stack, Typography } from "@mui/material";
 import { GoogleLogin } from "@react-oauth/google";
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../config/axios.config";
-import { config } from "../config/config";
-import Login from "./Login";
+import axios from "../../config/axios.config";
+import { config } from "../../config/config";
+import Login from "../../components/HomeCompo/Login";
+import useAuth from "../../hooks/useAuth";
 
 const Home = () => {
+  const { auth } = useAuth();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (auth.isAuthorize) {
+      navigate("/chat");
+    }
+  }, [auth]);
   return (
     <Stack
       direction={"column"}
@@ -117,18 +124,6 @@ const Home = () => {
       >
         Signin with Facebook
       </Box>
-      <Button
-        onClick={async () => {
-          try {
-            const res = await axios.delete("/auth/logout");
-            console.log("res from logout-", res);
-          } catch (error) {
-            console.log("error from logout-", error);
-          }
-        }}
-      >
-        Logout
-      </Button>
     </Stack>
   );
 };

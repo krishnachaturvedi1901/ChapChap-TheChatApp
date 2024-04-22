@@ -1,15 +1,14 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addEmailPasswordInfo } from "../../api/signupRequests";
+import { addCompanyInfo } from "../../../api/signupRequests";
 import { produce } from "immer";
-import { LOADING_ENUMS } from "../../enums/enums";
+import { LOADING_ENUMS } from "../../../enums/enums";
 
-export const addEmailPassInfoApiAction = createAsyncThunk(
-  "signup/addEmailPassInfoStatus",
+export const addcompanyInfoApiAction = createAsyncThunk(
+  "signup/addCompanyInfoStatus",
   async (payload, thunkApi) => {
     try {
-      const response = await addEmailPasswordInfo(payload);
+      const response = await addCompanyInfo(payload);
       console.log("res in redux-", response);
-
       if (response.isAdded) {
         return response;
       }
@@ -20,7 +19,7 @@ export const addEmailPassInfoApiAction = createAsyncThunk(
   }
 );
 
-const emailPassInfoInitialState = {
+const companyInfoInitialState = {
   loading: LOADING_ENUMS.LOAD_IDEL,
   data: {},
   isDataAvailable: false,
@@ -28,39 +27,39 @@ const emailPassInfoInitialState = {
   error: null,
 };
 
-const emailPassInfoSlice = createSlice({
-  name: "emailPassInfoSlice",
-  initialState: emailPassInfoInitialState,
+const companyInfoSlice = createSlice({
+  name: "companyInfoSlice",
+  initialState: companyInfoInitialState,
   reducers: {
-    addEmailPassInfoInStateAction: (state, action) => {
+    addCompanyInfoInStateAction: (state, action) => {
       return produce(state, (draftState) => {
         draftState.data = action.payload;
         draftState.isDataAvailable = true;
       });
     },
-    resetEmailPassInfoLoadingBackToIdle: (state, action) => {
+    resetCompanyInfoLoadingBackToIdle: (state, action) => {
       return produce(state, (draftState) => {
         draftState.loading = LOADING_ENUMS.LOAD_IDEL;
       });
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(addEmailPassInfoApiAction.pending, (state, action) => {
+    builder.addCase(addcompanyInfoApiAction.pending, (state, action) => {
       state.loading = LOADING_ENUMS.LOAD_PENDING;
     });
-    builder.addCase(addEmailPassInfoApiAction.fulfilled, (state, action) => {
+    builder.addCase(addcompanyInfoApiAction.fulfilled, (state, action) => {
       state.loading = LOADING_ENUMS.LOAD_SUCCEDED;
       state.requestStatus = action.payload;
     });
-    builder.addCase(addEmailPassInfoApiAction.rejected, (state, action) => {
+    builder.addCase(addcompanyInfoApiAction.rejected, (state, action) => {
       state.loading = LOADING_ENUMS.LOAD_FAILED;
       state.error = action.payload;
     });
   },
 });
 
-export default emailPassInfoSlice.reducer;
+export default companyInfoSlice.reducer;
 export const {
-  addEmailPassInfoInStateAction,
-  resetEmailPassInfoLoadingBackToIdle,
-} = emailPassInfoSlice.actions;
+  addCompanyInfoInStateAction,
+  resetCompanyInfoLoadingBackToIdle,
+} = companyInfoSlice.actions;

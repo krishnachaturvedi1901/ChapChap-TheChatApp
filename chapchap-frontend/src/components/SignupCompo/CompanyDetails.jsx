@@ -16,7 +16,7 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useDispatch, useSelector } from "react-redux";
-import { addPersonalInfoInStateAction } from "../../store/State/personalInfoSlice";
+import { addPersonalInfoInStateAction } from "../../store/State/signup/personalInfoSlice";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -27,7 +27,7 @@ import {
   addCompanyInfoInStateAction,
   addcompanyInfoApiAction,
   resetCompanyInfoLoadingBackToIdle,
-} from "../../store/State/companyInfoSlice";
+} from "../../store/State/signup/companyInfoSlice";
 import { LOADING_ENUMS, SESSION_ENUMS } from "../../enums/enums";
 import { jwtDataDecoder } from "../../utils/jwtDataDecoder";
 import { getFromSessionStorage } from "../../utils/editSessionStorage";
