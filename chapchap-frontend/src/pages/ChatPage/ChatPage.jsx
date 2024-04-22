@@ -20,24 +20,12 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import Fab from "@mui/material/Fab";
 import SendIcon from "@mui/icons-material/Send";
 import { TextField } from "@mui/material";
-
-function Copyright(props) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
+import useAuth from "../../hooks/useAuth";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useDispatch } from "react-redux";
+import { resetLoginStateBackToIdle } from "../../store/State/login/loginSlice";
+import { TOKEN_ENUMS } from "../../enums/enums";
+import axiosConfig from "../../config/axios.config";
 
 const drawerWidth = 240;
 
@@ -85,15 +73,32 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function Dashboard() {
+export default function ChatPage() {
+  const dispatch = useDispatch();
+  const { auth, setAuth } = useAuth();
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
+  const handleLogout = async () => {
+    console.log("Logut clicked");
+    localStorage.setItem(TOKEN_ENUMS.ACCESSTOKEN, JSON.stringify(""));
+    dispatch(resetLoginStateBackToIdle());
+    setAuth({ ...auth, isAuthorize: false, user: {} });
+    try {
+      const response = await axiosConfig.delete("/auth/logout", {
+        params: { userId: auth?.user?._id },
+      });
+      console.log("res=after logout", response);
+    } catch (error) {
+      console.log("err after logout-", error);
+    }
+  };
+
+  console.log("user in CHatpage-", auth);
   return (
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: "flex" }}>
@@ -130,6 +135,16 @@ export default function Dashboard() {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
+            <IconButton
+              color="inherit"
+              aria-label="logout user"
+              onClick={handleLogout}
+              sx={{
+                ml: "20px",
+              }}
+            >
+              <LogoutIcon />
+            </IconButton>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -137,10 +152,11 @@ export default function Dashboard() {
             sx={{
               display: "flex",
               alignItems: "center",
-              justifyContent: "flex-end",
+              justifyContent: "space-between",
               px: [1],
             }}
           >
+            <Box sx={{ fontWeight: "bold" }}>{auth?.user?.name}</Box>
             <IconButton onClick={toggleDrawer}>
               <ChevronLeftIcon />
             </IconButton>

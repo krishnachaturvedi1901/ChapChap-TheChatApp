@@ -7,19 +7,21 @@ import useRefreshToken from "../../hooks/useRefreshToken";
 import { useSnackbar } from "notistack";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Snackbar } from "@mui/material";
-import axios from "../../config/axios.config";
 import useAuth from "../../hooks/useAuth";
+import { getSession } from "../../api/authorizeRequest";
 
 export const AuthGuard = ({ children }) => {
   const { auth, setAuth } = useAuth();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const { requestStatus } = useSelector((state) => state.loginState);
-  const [isAllowedByOauth, setIsAllowedByOauth] = useState("");
   const refresh = useRefreshToken();
   const accessToken = JSON.parse(localStorage.getItem(TOKEN_ENUMS.ACCESSTOKEN));
+  const [accTokenData, setAccTokenData] = useState({
+    isTokenValid: false,
+    user: {},
+  });
   console.log("accessToekn in gueard-", accessToken);
-  const { isTokenValid } = jwtDataDecoder(accessToken);
-
+  console.log("accTokenData--", accTokenData);
   // const renewAccessToken = async () => {
   //   try {
   //     const res = await refresh();
@@ -30,37 +32,34 @@ export const AuthGuard = ({ children }) => {
   //   }
   // };
 
-  const getSession = async () => {
-    try {
-      const res = await axios("/auth/getSession");
-      console.log("res after getting session-", res);
-      return res?.data;
-    } catch (error) {
-      console.log("error after getting sesson-", error?.response?.data);
-      throw new Error(error?.response?.data?.error);
-    }
-  };
-  const isAuthenticated = async () => {
+  const isAuthorizedByOauth = async () => {
     try {
       const data = await getSession();
       console.log("res inAnth", data);
-      setAuth(data);
-      if (data?.isAuthorize) {
-        setIsAllowedByOauth("isAllowed");
-      } else {
-        setIsAllowedByOauth("notAllowed");
-      }
+      setAuth({ ...auth, ...data });
     } catch (error) {
       console.log("error in isAuthenticated", error);
+      setAuth({ ...auth, isAuthorize: false, user: {} });
     }
   };
 
   useLayoutEffect(() => {
-    isAuthenticated();
+    if (accessToken) {
+      const accessTokenData = jwtDataDecoder(accessToken);
+      setAccTokenData(accessTokenData);
+    }
+  }, [accessToken]);
+
+  useLayoutEffect(() => {
+    if (!auth.isAuthorize) {
+      isAuthorizedByOauth();
+    }
   }, []);
 
-  if (auth?.isAuthorize || isAllowedByOauth === "isAllowed" || isTokenValid) {
+  console.log("auth-->", auth);
+  if (auth?.isAuthorize || accTokenData.isTokenValid) {
     return children;
+  } else if (!auth?.isAuthorize) {
+    return <Navigate to={"/"} />;
   }
-  return <Navigate to={"/"} />;
 };

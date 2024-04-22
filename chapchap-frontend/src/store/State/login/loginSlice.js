@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { loginUserReq } from "../../../api/loginRequest";
 import { LOADING_ENUMS } from "../../../enums/enums";
+import { produce } from "immer";
 
 export const loginUserReqAction = createAsyncThunk(
   "loginSlice/loginUserReqActionState",
@@ -26,6 +27,16 @@ const loginInitialState = {
 const loginSlice = createSlice({
   name: "loginSlice",
   initialState: loginInitialState,
+  reducers: {
+    resetLoginStateBackToIdle: (state, action) => {
+      return produce(state, (draftState) => {
+        draftState.loading = LOADING_ENUMS.LOAD_IDEL;
+        draftState.user = {};
+        draftState.requestStatus = {};
+        draftState.error = null;
+      });
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(loginUserReqAction.pending, (state, action) => {
       state.loading = LOADING_ENUMS.LOAD_PENDING;
@@ -33,10 +44,10 @@ const loginSlice = createSlice({
     builder.addCase(loginUserReqAction.fulfilled, (state, action) => {
       state.loading = LOADING_ENUMS.LOAD_SUCCEDED;
       state.requestStatus = {
-        isLogin: action.payload?.isLogin,
+        isLogin: action?.payload?.isLogin,
         message: action?.payload?.message,
       };
-      state.user = action.payload?.user;
+      state.user = action?.payload?.data?.user;
     });
     builder.addCase(loginUserReqAction.rejected, (state, action) => {
       state.loading = LOADING_ENUMS.LOAD_FAILED;
@@ -44,5 +55,5 @@ const loginSlice = createSlice({
     });
   },
 });
-
+export const { resetLoginStateBackToIdle } = loginSlice.actions;
 export default loginSlice.reducer;

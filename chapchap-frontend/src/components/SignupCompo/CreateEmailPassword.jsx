@@ -18,7 +18,7 @@ import {
   addEmailPassInfoApiAction,
   addEmailPassInfoInStateAction,
   resetEmailPassInfoLoadingBackToIdle,
-} from "../../store/State/emailPassInfoSlice";
+} from "../../store/State/signup/emailPassInfoSlice";
 import { ThemeProvider } from "@emotion/react";
 import { LOADING_ENUMS } from "../../enums/enums";
 

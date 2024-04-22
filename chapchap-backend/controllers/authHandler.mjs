@@ -8,6 +8,7 @@ import {
 import { checkExistence } from "../helper/checkExistence.mjs";
 import { checkAndCompareDates } from "../helper/isDateValid.mjs";
 import { serializeToken } from "../helper/serializeToken.mjs";
+import { TOKEN_ENUMS } from "../enums/enums.mjs";
 
 export async function registerPersonalInfo(req, res, next) {
   try {
@@ -119,16 +120,20 @@ export async function loginHandler(req, res, next) {
       delete userObj.password;
       const accessToken = await createAccessToken(user._id.toString());
       const refreshToken = await createRefreshToken(user._id.toString());
-      const serializedAccessToken = serializeToken("accessToken", accessToken, {
-        httpOnly: false,
-        secure: false,
-        sameSite: "strict",
-        maxAge: 60,
-        path: "/",
-        domain: "localhost",
-      });
+      const serializedAccessToken = serializeToken(
+        TOKEN_ENUMS.ACCESSTOKEN,
+        accessToken,
+        {
+          httpOnly: true,
+          secure: false,
+          sameSite: "strict",
+          maxAge: 60,
+          path: "/",
+          domain: "localhost",
+        }
+      );
       const serializedRefreshToken = serializeToken(
-        "refreshToken",
+        TOKEN_ENUMS.REFRESHTOKEN,
         refreshToken,
         {
           httpOnly: true,
@@ -166,27 +171,52 @@ export async function loginHandler(req, res, next) {
   }
 }
 
-export function logoutHandler(req, res) {
-  console.log("req.session before destry-", req.session);
-  req.logout(function (err) {
-    console.log("err from req.logout", err);
-    if (err) {
-      return next(err);
-    }
-  });
-  console.log("req.session after destry-", req.session);
+export function logoutHandler(req, res, next) {
+  req.cookies[TOKEN_ENUMS.ACCESSTOKEN] = "";
+  req.cookies[TOKEN_ENUMS.REFRESHTOKEN] = "";
+  if (req.cookies[TOKEN_ENUMS.SESSIONID]) {
+    req.cookies[TOKEN_ENUMS.SESSIONID] = "";
+  }
 
-  res.status(200).json({
-    status: "success",
-    message: "Logged out",
-  });
+  if (req.sessionStore?.sessions) {
+    const sessionDataStringify =
+      req.sessionStore.sessions[Object.keys(req.sessionStore.sessions)[0]];
+    if (sessionDataStringify) {
+      const sessionData = JSON.parse(sessionDataStringify);
+      const accessToken = sessionData?.passport?.user?.accessToken;
+      axios
+        .post(
+          `https://accounts.google.com/o/oauth2/revoke?token=${accessToken}`
+        )
+        .then(() => {
+          res.clearCookie("connect.sid");
+        })
+        .then(() => {
+          req.logout((err) => {
+            if (err) {
+              console.log("err from logut", err);
+              next(err);
+            }
+            return res.status(200).send({ message: "Logout successfull" });
+          });
+        })
+        .catch((err) => {
+          console.error("Error revoking access token:", err);
+          return res.redirect(config.clientUrl_onLoginFailure);
+        });
+    }
+  }
+  return res.status(200).send({ message: "Logout successfull" });
 }
 
 export async function renewTokenHandler(req, res, next) {
   const userId = req.payload;
   console.log("Inside renewTokenHandler userid", userId);
   const accessToken = await createAccessToken(userId);
-  const serializedAccessToken = serializeToken("accessToken", accessToken);
+  const serializedAccessToken = serializeToken(
+    TOKEN_ENUMS.ACCESSTOKEN,
+    accessToken
+  );
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
   res.setHeader("Set-Cookie", serializedAccessToken);
   res.status(200).send({ token: accessToken });

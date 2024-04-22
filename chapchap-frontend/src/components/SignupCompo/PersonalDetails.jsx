@@ -20,7 +20,7 @@ import {
   addPersonalInfoApiAction,
   addPersonalInfoInStateAction,
   resetLoadingBackToIdle,
-} from "../../store/State/personalInfoSlice";
+} from "../../store/State/signup/personalInfoSlice";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { getFromSessionStorage } from "../../utils/editSessionStorage";
 import { LOADING_ENUMS, SESSION_ENUMS } from "../../enums/enums";

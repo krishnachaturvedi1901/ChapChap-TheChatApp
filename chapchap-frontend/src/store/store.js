@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import personalInfoReducer from "./State/personalInfoSlice";
-import companyInfoReducer from "./State/companyInfoSlice";
-import emailPassInfoReducer from "./State/emailPassInfoSlice";
+import personalInfoReducer from "./State/signup/personalInfoSlice";
+import companyInfoReducer from "./State/signup/companyInfoSlice";
+import emailPassInfoReducer from "./State/signup/emailPassInfoSlice";
 import loginReducer from "./State/login/loginSlice";
 
 export const store = configureStore({

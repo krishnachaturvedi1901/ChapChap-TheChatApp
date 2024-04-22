@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { addPersonalInfo } from "../../api/signupRequests";
+import { addPersonalInfo } from "../../../api/signupRequests";
 import { produce } from "immer";
-import { LOADING_ENUMS } from "../../enums/enums";
+import { LOADING_ENUMS } from "../../../enums/enums";
 
 export const addPersonalInfoApiAction = createAsyncThunk(
   "signup/addPersonalInfoStatus",

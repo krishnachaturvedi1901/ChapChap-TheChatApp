@@ -30,6 +30,7 @@ i.e. cb  (<no error>, <return "google" profile to serializeUser()>)*/
         provider: "google",
         userOauthId: profile?.id,
       });
+      userAlready = { ...userAlready, accessToken };
       if (userAlready && !userInOauth) {
         userInOauth = await OAuthUserModel.create({
           provider: "google",
