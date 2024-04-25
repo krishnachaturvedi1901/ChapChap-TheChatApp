@@ -6,15 +6,28 @@ import axios from "../../config/axios.config";
 import { config } from "../../config/config";
 import Login from "../../components/HomeCompo/Login";
 import useAuth from "../../hooks/useAuth";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuthSessionAction } from "../../store/State/session/sessionSlice";
+import { LOADING_ENUMS } from "../../enums/enums";
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const { isLoading, error, session } = useSelector(
+    (state) => state.authSessionState
+  );
   const { auth } = useAuth();
   const navigate = useNavigate();
+
   useEffect(() => {
-    if (auth.isAuthorize) {
+    if (!session?.isAuthorize && isLoading === LOADING_ENUMS.LOAD_IDEL) {
+      dispatch(getAuthSessionAction());
+    } else if (
+      session?.isAuthorize &&
+      isLoading === LOADING_ENUMS.LOAD_SUCCEDED
+    ) {
       navigate("/chat");
     }
-  }, [auth]);
+  }, []);
   return (
     <Stack
       direction={"column"}
@@ -120,6 +133,9 @@ const Home = () => {
             backgroundColor: "#5B7BD5",
             backgroundImage: "linear-gradient(#5B7BD5, #4864B1)",
           },
+        }}
+        onClick={() => {
+          window.open(`${config.api_url}/auth/facebook`, "_self");
         }}
       >
         Signin with Facebook

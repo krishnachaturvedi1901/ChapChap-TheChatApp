@@ -22,10 +22,12 @@ import SendIcon from "@mui/icons-material/Send";
 import { TextField } from "@mui/material";
 import useAuth from "../../hooks/useAuth";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { resetLoginStateBackToIdle } from "../../store/State/login/loginSlice";
 import { TOKEN_ENUMS } from "../../enums/enums";
 import axiosConfig from "../../config/axios.config";
+import { logoutAction } from "../../store/State/logout/logoutSlice";
+import { expiresAuthSession } from "../../store/State/session/sessionSlice";
 
 const drawerWidth = 240;
 
@@ -77,6 +79,7 @@ const defaultTheme = createTheme();
 
 export default function ChatPage() {
   const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => logoutState);
   const { auth, setAuth } = useAuth();
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
@@ -86,16 +89,9 @@ export default function ChatPage() {
   const handleLogout = async () => {
     console.log("Logut clicked");
     localStorage.setItem(TOKEN_ENUMS.ACCESSTOKEN, JSON.stringify(""));
+    dispatch(logoutAction());
     dispatch(resetLoginStateBackToIdle());
-    setAuth({ ...auth, isAuthorize: false, user: {} });
-    try {
-      const response = await axiosConfig.delete("/auth/logout", {
-        params: { userId: auth?.user?._id },
-      });
-      console.log("res=after logout", response);
-    } catch (error) {
-      console.log("err after logout-", error);
-    }
+    dispatch(expiresAuthSession());
   };
 
   console.log("user in CHatpage-", auth);

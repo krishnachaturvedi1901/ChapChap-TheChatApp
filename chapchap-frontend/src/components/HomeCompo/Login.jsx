@@ -18,6 +18,7 @@ import { ThemeProvider } from "@emotion/react";
 import { loginUserReqAction } from "../../store/State/login/loginSlice";
 import { LOADING_ENUMS } from "../../enums/enums";
 import useAuth from "../../hooks/useAuth";
+import { setAuthSessionDirectly } from "../../store/State/session/sessionSlice";
 
 const Login = () => {
   const { auth, setAuth } = useAuth();
@@ -93,7 +94,7 @@ const Login = () => {
   };
   React.useEffect(() => {
     if (loading === LOADING_ENUMS.LOAD_SUCCEDED) {
-      setAuth({ ...auth, isAuthorize: true, user: user });
+      dispatch(setAuthSessionDirectly({ isAuthorize: true, user: user }));
       setSnackbarOpen(true);
       const timer = setTimeout(() => {
         navigate("/chat");

@@ -4,6 +4,7 @@ import { UserModel } from "../models/UsersModel.mjs";
 
 export const verifyOauthSession = async (req, res, next) => {
   const userId = req.payload;
+  console.log("userId-", userId);
   if (userId) {
     try {
       const user = await UserModel.findById({ _id: userId });
@@ -17,6 +18,7 @@ export const verifyOauthSession = async (req, res, next) => {
       console.log("Invalid userId from token user not found.", error);
     }
   }
+  console.log("req.sessionStore", req.sessionStore);
   if (req.sessionStore?.sessions) {
     const sessionDataStringify =
       req.sessionStore.sessions[Object.keys(req.sessionStore.sessions)[0]];

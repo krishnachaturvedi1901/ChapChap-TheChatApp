@@ -8,7 +8,7 @@ import { useSnackbar } from "notistack";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Alert, Snackbar } from "@mui/material";
 import useAuth from "../../hooks/useAuth";
-import { getSession } from "../../api/authorizeRequest";
+import { getAuthSession } from "../../api/authorizeRequest";
 
 export const AuthGuard = ({ children }) => {
   const { auth, setAuth } = useAuth();
@@ -34,7 +34,7 @@ export const AuthGuard = ({ children }) => {
 
   const isAuthorizedByOauth = async () => {
     try {
-      const data = await getSession();
+      const data = await getAuthSession();
       console.log("res inAnth", data);
       setAuth({ ...auth, ...data });
     } catch (error) {

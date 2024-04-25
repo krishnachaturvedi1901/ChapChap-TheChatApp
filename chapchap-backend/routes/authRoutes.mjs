@@ -50,6 +50,24 @@ authRoute.get(
     res.redirect(config.clientUrl_onLoginSuccess);
   }
 );
-authRoute.get("/getSession", verifyAccessToken, verifyOauthSession);
+
+authRoute.get(
+  "/facebook",
+  passport.authenticate("facebook", {
+    scope: ["email", "profileUrl"],
+  })
+);
+
+authRoute.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", {
+    failureRedirect: config.clientUrl_onLoginFailure,
+  }),
+  (req, res) => {
+    res.redirect(config.clientUrl_onLoginSuccess);
+  }
+);
+
+authRoute.get("/getAuthSession", verifyAccessToken, verifyOauthSession);
 
 authRoute.delete("/logout", logoutHandler);

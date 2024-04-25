@@ -6,8 +6,9 @@ import { authRoute } from "./routes/authRoutes.mjs";
 import createHttpError from "http-errors";
 import passport from "passport";
 import session from "express-session";
-import googleAuthStrategy from "./helper/passport.mjs";
+import googleAuthStrategy from "./helper/passportGoogleOauthStrategy.mjs";
 import { default as cookieParser } from "cookie-parser";
+import facebookAuthStrategy from "./helper/passportFbOauthStrategy.mjs";
 
 const app = express();
 app.use(cors());
@@ -24,6 +25,7 @@ app.use(
 // app.use(passport.initialize());
 app.use(passport.session());
 passport.use(googleAuthStrategy);
+passport.use(facebookAuthStrategy);
 
 app.use("/auth", authRoute);
 

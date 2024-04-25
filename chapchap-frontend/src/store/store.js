@@ -3,6 +3,8 @@ import personalInfoReducer from "./State/signup/personalInfoSlice";
 import companyInfoReducer from "./State/signup/companyInfoSlice";
 import emailPassInfoReducer from "./State/signup/emailPassInfoSlice";
 import loginReducer from "./State/login/loginSlice";
+import sessionReducer from "./State/session/sessionSlice";
+import logoutReducer from "./State/logout/logoutSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +12,8 @@ export const store = configureStore({
     companyInfoState: companyInfoReducer,
     emailPasswordInfoState: emailPassInfoReducer,
     loginState: loginReducer,
+    authSessionState: sessionReducer,
+    logoutState: logoutReducer,
   },
 });
 

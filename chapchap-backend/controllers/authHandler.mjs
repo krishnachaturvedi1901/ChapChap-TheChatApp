@@ -9,6 +9,7 @@ import { checkExistence } from "../helper/checkExistence.mjs";
 import { checkAndCompareDates } from "../helper/isDateValid.mjs";
 import { serializeToken } from "../helper/serializeToken.mjs";
 import { TOKEN_ENUMS } from "../enums/enums.mjs";
+import axios from "axios";
 
 export async function registerPersonalInfo(req, res, next) {
   try {
