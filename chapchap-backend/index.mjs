@@ -22,7 +22,7 @@ app.use(
     cookie: { secure: config.node_env === "production" },
   })
 );
-// app.use(passport.initialize());
+app.use(passport.initialize());
 app.use(passport.session());
 passport.use(googleAuthStrategy);
 passport.use(facebookAuthStrategy);

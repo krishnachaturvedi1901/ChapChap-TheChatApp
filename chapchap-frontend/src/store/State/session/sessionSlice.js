@@ -20,7 +20,7 @@ export const getAuthSessionAction = createAsyncThunk(
 const initialState = {
   isLoading: LOADING_ENUMS.LOAD_IDEL,
   error: null,
-  session: { isAuthorize: false, user: null },
+  auth: { isAuthorize: false, user: null },
 };
 
 const sessionSlice = createSlice({
@@ -30,14 +30,14 @@ const sessionSlice = createSlice({
     expiresAuthSession: (state, action) => {
       return produce(state, (draftState) => {
         draftState.isLoading = LOADING_ENUMS.LOAD_IDEL;
-        draftState.session = { isAuthorize: false, user: null };
+        draftState.auth = { isAuthorize: false, user: null };
         draftState.error = null;
       });
     },
     setAuthSessionDirectly: (state, action) => {
       return produce(state, (draftState) => {
         draftState.isLoading = LOADING_ENUMS.LOAD_SUCCEDED;
-        draftState.session = action.payload;
+        draftState.auth = action.payload;
         draftState.error = null;
       });
     },
@@ -48,7 +48,7 @@ const sessionSlice = createSlice({
     });
     builder.addCase(getAuthSessionAction.fulfilled, (state, action) => {
       state.isLoading = LOADING_ENUMS.LOAD_SUCCEDED;
-      state.session = action.payload;
+      state.auth = action.payload;
     });
     builder.addCase(getAuthSessionAction.rejected, (state, action) => {
       state.isLoading = LOADING_ENUMS.LOAD_FAILED;

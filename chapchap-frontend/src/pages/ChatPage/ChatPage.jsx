@@ -1,4 +1,3 @@
-import * as React from "react";
 import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
@@ -24,10 +23,14 @@ import useAuth from "../../hooks/useAuth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useDispatch, useSelector } from "react-redux";
 import { resetLoginStateBackToIdle } from "../../store/State/login/loginSlice";
-import { TOKEN_ENUMS } from "../../enums/enums";
+import { LOADING_ENUMS, TOKEN_ENUMS } from "../../enums/enums";
 import axiosConfig from "../../config/axios.config";
-import { logoutAction } from "../../store/State/logout/logoutSlice";
+import {
+  logoutAction,
+  resetLogoutStateBackToIdle,
+} from "../../store/State/logout/logoutSlice";
 import { expiresAuthSession } from "../../store/State/session/sessionSlice";
+import { useEffect, useState } from "react";
 
 const drawerWidth = 240;
 
@@ -79,22 +82,28 @@ const defaultTheme = createTheme();
 
 export default function ChatPage() {
   const dispatch = useDispatch();
-  const { isLoading } = useSelector((state) => logoutState);
-  const { auth, setAuth } = useAuth();
-  const [open, setOpen] = React.useState(true);
+  const { isLoading: logoutLoading } = useSelector(
+    (state) => state.logoutState
+  );
+  const { auth } = useSelector((state) => state.authSessionState);
+  const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
   const handleLogout = async () => {
-    console.log("Logut clicked");
-    localStorage.setItem(TOKEN_ENUMS.ACCESSTOKEN, JSON.stringify(""));
     dispatch(logoutAction());
-    dispatch(resetLoginStateBackToIdle());
-    dispatch(expiresAuthSession());
   };
 
-  console.log("user in CHatpage-", auth);
+  useEffect(() => {
+    if (logoutLoading === LOADING_ENUMS.LOAD_SUCCEDED) {
+      dispatch(resetLoginStateBackToIdle());
+      dispatch(expiresAuthSession());
+      // dispatch(resetLogoutStateBackToIdle());
+    }
+  }, [logoutLoading]);
+
+  console.log("auth in CHatpage-", auth);
   return (
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: "flex" }}>
@@ -139,7 +148,11 @@ export default function ChatPage() {
                 ml: "20px",
               }}
             >
-              <LogoutIcon />
+              {logoutLoading === LOADING_ENUMS.LOAD_PENDING ? (
+                "---"
+              ) : (
+                <LogoutIcon />
+              )}
             </IconButton>
           </Toolbar>
         </AppBar>

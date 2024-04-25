@@ -47,7 +47,7 @@ authRoute.get(
     failureRedirect: config.clientUrl_onLoginFailure,
   }),
   (req, res) => {
-    res.redirect(config.clientUrl_onLoginSuccess);
+    res.redirect(config.clientUrl_onLoginFailure);
   }
 );
 

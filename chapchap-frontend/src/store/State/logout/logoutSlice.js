@@ -1,6 +1,7 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { logoutRequest } from "../../../api/logoutRequest";
 import { LOADING_ENUMS } from "../../../enums/enums";
+import { produce } from "immer";
 
 export const logoutAction = createAsyncThunk(
   "logoutActionStatus",
@@ -25,7 +26,15 @@ const logoutState = {
 const logoutSlice = createSlice({
   initialState: logoutState,
   name: "logoutSlice",
-  reducers: {},
+  reducers: {
+    resetLogoutStateBackToIdle: (state, action) => {
+      return produce(state, (draftState) => {
+        draftState.isLoading = LOADING_ENUMS.LOAD_IDEL;
+        draftState.message = null;
+        draftState.error = null;
+      });
+    },
+  },
 
   extraReducers: (builder) => {
     builder.addCase(logoutAction.pending, (state, action) => {
@@ -42,4 +51,5 @@ const logoutSlice = createSlice({
   },
 });
 
+export const { resetLogoutStateBackToIdle } = logoutSlice.actions;
 export default logoutSlice.reducer;

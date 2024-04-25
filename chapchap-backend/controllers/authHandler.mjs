@@ -10,6 +10,7 @@ import { checkAndCompareDates } from "../helper/isDateValid.mjs";
 import { serializeToken } from "../helper/serializeToken.mjs";
 import { TOKEN_ENUMS } from "../enums/enums.mjs";
 import axios from "axios";
+import { config } from "../config/config.mjs";
 
 export async function registerPersonalInfo(req, res, next) {
   try {
@@ -172,7 +173,45 @@ export async function loginHandler(req, res, next) {
   }
 }
 
-export function logoutHandler(req, res, next) {
+// export function logoutHandler(req, res, next) {
+//   req.cookies[TOKEN_ENUMS.ACCESSTOKEN] = "";
+//   req.cookies[TOKEN_ENUMS.REFRESHTOKEN] = "";
+//   if (req.cookies[TOKEN_ENUMS.SESSIONID]) {
+//     req.cookies[TOKEN_ENUMS.SESSIONID] = "";
+//   }
+
+//   if (req.sessionStore?.sessions) {
+//     const sessionDataStringify =
+//       req.sessionStore.sessions[Object.keys(req.sessionStore.sessions)[0]];
+//     if (sessionDataStringify) {
+//       const sessionData = JSON.parse(sessionDataStringify);
+//       const accessToken = sessionData?.passport?.user?.accessToken;
+//       axios
+//         .post(
+//           `https://accounts.google.com/o/oauth2/revoke?token=${accessToken}`
+//         )
+//         .then(() => {
+//           res.clearCookie("connect.sid");
+//         })
+//         .then(() => {
+//           req.logout((err) => {
+//             if (err) {
+//               console.log("err from logut", err);
+//               next(err);
+//             }
+//             return res.status(200).send({ message: "Logout successfull" });
+//           });
+//         })
+//         .catch((err) => {
+//           console.error("Error revoking access token:", err);
+//           return res.redirect(config.clientUrl_onLoginFailure);
+//         });
+//     }
+//   }
+//   return res.status(200).send({ message: "Logout successfull" });
+// }
+
+export async function logoutHandler(req, res, next) {
   req.cookies[TOKEN_ENUMS.ACCESSTOKEN] = "";
   req.cookies[TOKEN_ENUMS.REFRESHTOKEN] = "";
   if (req.cookies[TOKEN_ENUMS.SESSIONID]) {
@@ -185,29 +224,32 @@ export function logoutHandler(req, res, next) {
     if (sessionDataStringify) {
       const sessionData = JSON.parse(sessionDataStringify);
       const accessToken = sessionData?.passport?.user?.accessToken;
-      axios
-        .post(
+      console.log("fromLogout-", accessToken);
+      req.logout((err) => {
+        if (err) {
+          console.error("Error destroying session-2:", err);
+          return next(
+            createHttpError.InternalServerError("Unable to logout-2")
+          );
+        }
+        console.log("NO ERROR IN REQ.LOGOUT");
+      });
+
+      try {
+        const response = await axios.post(
           `https://accounts.google.com/o/oauth2/revoke?token=${accessToken}`
-        )
-        .then(() => {
-          res.clearCookie("connect.sid");
-        })
-        .then(() => {
-          req.logout((err) => {
-            if (err) {
-              console.log("err from logut", err);
-              next(err);
-            }
-            return res.status(200).send({ message: "Logout successfull" });
-          });
-        })
-        .catch((err) => {
-          console.error("Error revoking access token:", err);
-          return res.redirect(config.clientUrl_onLoginFailure);
-        });
+        );
+        // console.log("res after google revoke loggout=", response);
+        res.clearCookie("connect.sid");
+        return res.status(200).send({ message: "Logout successful" });
+      } catch (error) {
+        console.error("Error revoking access token:", error);
+        return next(createHttpError.InternalServerError("Unable to logout"));
+      }
     }
+  } else {
+    return res.status(200).send({ message: "Logout successful" });
   }
-  return res.status(200).send({ message: "Logout successfull" });
 }
 
 export async function renewTokenHandler(req, res, next) {

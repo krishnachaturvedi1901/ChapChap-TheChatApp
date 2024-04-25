@@ -12,22 +12,29 @@ import { LOADING_ENUMS } from "../../enums/enums";
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { isLoading, error, session } = useSelector(
+  const { isLoading, error, auth } = useSelector(
     (state) => state.authSessionState
   );
-  const { auth } = useAuth();
+  const { isLoading: logoutLoading } = useSelector(
+    (state) => state.logoutState
+  );
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!session?.isAuthorize && isLoading === LOADING_ENUMS.LOAD_IDEL) {
-      dispatch(getAuthSessionAction());
-    } else if (
-      session?.isAuthorize &&
-      isLoading === LOADING_ENUMS.LOAD_SUCCEDED
+    if (
+      !auth?.isAuthorize &&
+      isLoading === LOADING_ENUMS.LOAD_IDEL &&
+      logoutLoading !== LOADING_ENUMS.LOAD_SUCCEDED
     ) {
+      console.log("from11111");
+      dispatch(getAuthSessionAction());
+    } else if (auth?.isAuthorize && isLoading === LOADING_ENUMS.LOAD_SUCCEDED) {
+      console.log("from22222");
       navigate("/chat");
     }
-  }, []);
+  }, [auth, isLoading]);
+
   return (
     <Stack
       direction={"column"}
