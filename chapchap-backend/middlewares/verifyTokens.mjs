@@ -4,6 +4,7 @@ import { config } from "../config/config.mjs";
 import { TOKEN_ENUMS } from "../enums/enums.mjs";
 
 export const verifyAccessToken = (req, res, next) => {
+  console.log(req);
   console.log("req.cookies-", req.cookies);
   const { accessToken_chapchap, refreshToken_chapchap } = req?.cookies;
   console.log("Getting aceesToken-", accessToken_chapchap);
@@ -20,7 +21,7 @@ export const verifyAccessToken = (req, res, next) => {
             if (req.cookies[TOKEN_ENUMS.SESSIONID]) {
               req.cookies[TOKEN_ENUMS.SESSIONID] = "";
             }
-            console.log("Invalid accessToken_chapchap main error");
+            console.log("Invalid accessToken_chapchap main error", err);
             next();
           } else {
             const userId = payload.aud;

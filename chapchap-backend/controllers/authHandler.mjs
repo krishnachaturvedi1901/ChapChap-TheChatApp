@@ -212,15 +212,16 @@ export async function loginHandler(req, res, next) {
 // }
 
 export async function logoutHandler(req, res, next) {
+  console.log(req, "<---from logout");
   req.cookies[TOKEN_ENUMS.ACCESSTOKEN] = "";
   req.cookies[TOKEN_ENUMS.REFRESHTOKEN] = "";
   if (req.cookies[TOKEN_ENUMS.SESSIONID]) {
     req.cookies[TOKEN_ENUMS.SESSIONID] = "";
   }
-
-  if (req.sessionStore?.sessions) {
-    const sessionDataStringify =
-      req.sessionStore.sessions[Object.keys(req.sessionStore.sessions)[0]];
+  if (req.sessionStore?.sessions && req.sessionStore?.sessions?.user) {
+    const OauthCookieKey = Object.keys(req.sessionStore.sessions)[0];
+    console.log("going in if-", req.sessionStore?.sessions);
+    const sessionDataStringify = req.sessionStore.sessions[OauthCookieKey];
     if (sessionDataStringify) {
       const sessionData = JSON.parse(sessionDataStringify);
       const accessToken = sessionData?.passport?.user?.accessToken;

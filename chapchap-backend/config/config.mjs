@@ -14,4 +14,10 @@ export const config = {
   facebook_oauth_secret: process.env.FACEBOOK_OAUTH_SECRET,
   clientUrl_onLoginSuccess: process.env.CLIENT_URL_ONSUCCESSAUTH,
   clientUrl_onLoginFailure: process.env.CLIENT_URL_ONFAILUREAUTH,
+  redis_port: process.env.REDIS_PORT,
+  redis_host: process.env.REDIS_HOST,
+  session_minAge: process.env.SESSION_MINAGE,
+  session_maxAge: process.env.SESSION_MAXAGE,
+  redis_db_uri: process.env.REDIS_DB_URI,
+  redis_password: process.env.REDIS_PASSWORD,
 };
