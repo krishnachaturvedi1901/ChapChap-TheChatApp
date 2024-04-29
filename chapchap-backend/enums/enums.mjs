@@ -1,5 +1,5 @@
 export const TOKEN_ENUMS = {
-  ACCESSTOKEN: "accessToken_chapchap",
-  REFRESHTOKEN: "refreshToken_chapchap",
-  SESSIONID: "connect.sid",
+  ACCESSTOKEN: "accessToken",
+  REFRESHTOKEN: "refreshToken",
+  SESSIONID: "session-id",
 };

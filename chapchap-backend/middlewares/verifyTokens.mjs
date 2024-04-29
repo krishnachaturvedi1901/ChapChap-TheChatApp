@@ -6,9 +6,13 @@ import { TOKEN_ENUMS } from "../enums/enums.mjs";
 export const verifyAccessToken = (req, res, next) => {
   console.log(req);
   console.log("req.cookies-", req.cookies);
-  const { accessToken_chapchap, refreshToken_chapchap } = req?.cookies;
+  const {
+    accessToken: accessToken_chapchap,
+    refreshToken: refreshToken_chapchap,
+  } = req?.cookies;
   console.log("Getting aceesToken-", accessToken_chapchap);
   console.log("Getting refreshTok inside midd-", refreshToken_chapchap);
+  console.log(" config.jwt_accessToken_secret=", config.jwt_accessToken_secret);
   if (accessToken_chapchap) {
     try {
       jwt.verify(

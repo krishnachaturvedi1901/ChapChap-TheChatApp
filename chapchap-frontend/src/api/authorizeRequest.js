@@ -2,7 +2,9 @@ import axiosConfig from "../config/axios.config";
 
 export const getAuthSession = async () => {
   try {
-    const res = await axiosConfig("/auth/getAuthSession");
+    const res = await axiosConfig("/auth/getAuthSession", {
+      withCredentials: true,
+    });
     console.log("res after getting session-", res);
     return res?.data;
   } catch (error) {

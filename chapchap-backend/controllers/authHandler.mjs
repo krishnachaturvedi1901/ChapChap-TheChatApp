@@ -146,6 +146,7 @@ export async function loginHandler(req, res, next) {
           domain: "localhost",
         }
       );
+      console.log("serialisedACCESTOKEN---", serializedAccessToken);
       res.setHeader("Set-Cookie", [
         serializedAccessToken,
         serializedRefreshToken,

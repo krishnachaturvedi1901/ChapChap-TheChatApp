@@ -11,7 +11,7 @@ export function createJWT(payload) {
 export async function createAccessToken(userId) {
   return new Promise((resolve, reject) => {
     const options = {
-      expiresIn: "30s",
+      expiresIn: config.accessToken_age,
       issuer: "jwt-message-app",
       audience: userId,
     };
@@ -29,7 +29,7 @@ export async function createAccessToken(userId) {
 export async function createRefreshToken(userId) {
   return new Promise((resolve, reject) => {
     const options = {
-      expiresIn: "120s",
+      expiresIn: config.refreshToken_age,
       issuer: "jwt-message-app",
       audience: userId,
     };

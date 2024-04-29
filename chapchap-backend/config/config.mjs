@@ -20,4 +20,6 @@ export const config = {
   session_maxAge: process.env.SESSION_MAXAGE,
   redis_db_uri: process.env.REDIS_DB_URI,
   redis_password: process.env.REDIS_PASSWORD,
+  accessToken_age: process.env.ACCESSTOKEN_AGE,
+  refreshToken_age: process.env.REFRESHTOKEN_AGE,
 };
