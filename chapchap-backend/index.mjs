@@ -9,13 +9,25 @@ import { default as cookieParser } from "cookie-parser";
 import facebookAuthStrategy from "./helper/passportFbOauthStrategy.mjs";
 import session from "./middlewares/session.mjs";
 import { errorHandler, notFoundHandler } from "./controllers/errorHandler.mjs";
-
+import { createServer } from "http";
+import { Server } from "socket.io";
 const app = express();
 
 // If you run behind a proxy (e.g. nginx)
 // app.set("trust proxy", 1)
-
-app.use(cors());
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  pingTimeout: 60000,
+  cors: {
+    credentials: true,
+  },
+});
+app.set("io", io);
+app.use(
+  cors({
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use(session);

@@ -122,40 +122,47 @@ export async function loginHandler(req, res, next) {
       delete userObj.password;
       const accessToken = await createAccessToken(user._id.toString());
       const refreshToken = await createRefreshToken(user._id.toString());
+      const optionsAccessToken = {
+        httpOnly: true,
+        secure: config.node_env === "production",
+        sameSite: "strict",
+        maxAge: config.accessToken_age,
+        path: "/",
+        domain: "localhost",
+      };
+      const optionsRefreshToken = {
+        httpOnly: true,
+        secure: config.node_env === "production",
+        sameSite: "strict",
+        maxAge: config.refreshToken_age,
+        path: "/",
+        domain: "localhost",
+      };
+
       const serializedAccessToken = serializeToken(
         TOKEN_ENUMS.ACCESSTOKEN,
         accessToken,
-        {
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-          maxAge: 60,
-          path: "/",
-          domain: "localhost",
-        }
+        optionsAccessToken
       );
       const serializedRefreshToken = serializeToken(
         TOKEN_ENUMS.REFRESHTOKEN,
         refreshToken,
-        {
-          httpOnly: true,
-          secure: false,
-          sameSite: "strict",
-          maxAge: 120,
-          path: "/",
-          domain: "localhost",
-        }
+        optionsRefreshToken
       );
       console.log("serialisedACCESTOKEN---", serializedAccessToken);
-      res.setHeader("Set-Cookie", [
-        serializedAccessToken,
-        serializedRefreshToken,
-      ]);
-      return res.status(200).send({
-        user: userObj,
-        token: accessToken,
-        message: "User loggedin successfully",
-      });
+      // res.setHeader("Set-Cookie", [
+      //   serializedAccessToken,
+      //   serializedRefreshToken,
+      // ]);
+      return res
+        .status(200)
+        .cookie(TOKEN_ENUMS.ACCESSTOKEN, accessToken, optionsAccessToken)
+        .cookie(TOKEN_ENUMS.REFRESHTOKEN, refreshToken, optionsRefreshToken)
+        .send({
+          user: userObj,
+          token: accessToken,
+          message: "User loggedin successfully",
+        });
     } else {
       return next(createHttpError.Unauthorized("Invalid password"));
     }

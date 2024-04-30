@@ -6,58 +6,51 @@ import { TOKEN_ENUMS } from "../enums/enums.mjs";
 export const verifyAccessToken = (req, res, next) => {
   console.log(req);
   console.log("req.cookies-", req.cookies);
-  const {
-    accessToken: accessToken_chapchap,
-    refreshToken: refreshToken_chapchap,
-  } = req?.cookies;
-  console.log("Getting aceesToken-", accessToken_chapchap);
-  console.log("Getting refreshTok inside midd-", refreshToken_chapchap);
+  const { accessToken, refreshToken } = req?.cookies;
+  console.log("Getting aceesToken-", accessToken);
+  console.log("Getting refreshTok inside midd-", refreshToken);
   console.log(" config.jwt_accessToken_secret=", config.jwt_accessToken_secret);
-  if (accessToken_chapchap) {
+  if (accessToken) {
     try {
-      jwt.verify(
-        accessToken_chapchap,
-        config.jwt_accessToken_secret,
-        (err, payload) => {
-          if (err) {
-            req.cookies[TOKEN_ENUMS.ACCESSTOKEN] = "";
-            req.cookies[TOKEN_ENUMS.REFRESHTOKEN] = "";
-            if (req.cookies[TOKEN_ENUMS.SESSIONID]) {
-              req.cookies[TOKEN_ENUMS.SESSIONID] = "";
-            }
-            console.log("Invalid accessToken_chapchap main error", err);
-            next();
-          } else {
-            const userId = payload.aud;
-            req.payload = userId;
-            next();
+      jwt.verify(accessToken, config.jwt_accessToken_secret, (err, payload) => {
+        if (err) {
+          req.cookies[TOKEN_ENUMS.ACCESSTOKEN] = "";
+          req.cookies[TOKEN_ENUMS.REFRESHTOKEN] = "";
+          if (req.cookies[TOKEN_ENUMS.SESSIONID]) {
+            req.cookies[TOKEN_ENUMS.SESSIONID] = "";
           }
+          console.log("Invalid accessToken error", err);
+          next();
+        } else {
+          const userId = payload.aud;
+          req.payload = userId;
+          next();
         }
-      );
+      });
     } catch (error) {
       req.cookies[TOKEN_ENUMS.ACCESSTOKEN] = "";
       req.cookies[TOKEN_ENUMS.REFRESHTOKEN] = "";
       if (req.cookies[TOKEN_ENUMS.SESSIONID]) {
         req.cookies[TOKEN_ENUMS.SESSIONID] = "";
       }
-      console.log("Invalid accessToken_chapchap from catch");
+      console.log("Invalid accessToken from catch");
       next();
     }
   } else {
-    console.log("Invalid accessToken_chapchap from else");
+    console.log("Invalid accessToken from else");
     next();
   }
 };
 
 export const verifyRefreshToken = (req, res, next) => {
-  const { accessToken_chapchap, refreshToken_chapchap } = req?.cookies;
+  const { accessToken, refreshToken } = req?.cookies;
   console.log(req);
-  console.log("Getting aceesToken-", accessToken_chapchap);
-  console.log("Getting refreshTok inside midd-", refreshToken_chapchap);
-  if (refreshToken_chapchap) {
+  console.log("Getting aceesToken-", accessToken);
+  console.log("Getting refreshTok inside midd-", refreshToken);
+  if (refreshToken) {
     try {
       jwt.verify(
-        refreshToken_chapchap,
+        refreshToken,
         config.jwt_refreshToken_secret,
         (err, payload) => {
           if (err) {
