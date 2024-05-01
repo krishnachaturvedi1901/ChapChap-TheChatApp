@@ -4,7 +4,7 @@ import { config } from "../config/config.mjs";
 import { TOKEN_ENUMS } from "../enums/enums.mjs";
 
 export const verifyAccessToken = (req, res, next) => {
-  console.log(req);
+  // console.log(req);
   console.log("req.cookies-", req.cookies);
   const { accessToken, refreshToken } = req?.cookies;
   console.log("Getting aceesToken-", accessToken);

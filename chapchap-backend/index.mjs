@@ -11,6 +11,7 @@ import session from "./middlewares/session.mjs";
 import { errorHandler, notFoundHandler } from "./controllers/errorHandler.mjs";
 import { createServer } from "http";
 import { Server } from "socket.io";
+import { initializeSocketIo } from "./socket/socket.mjs";
 const app = express();
 
 // If you run behind a proxy (e.g. nginx)
@@ -19,12 +20,14 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   pingTimeout: 60000,
   cors: {
+    origin: config.client_url,
     credentials: true,
   },
 });
 app.set("io", io);
 app.use(
   cors({
+    origin: config.client_url,
     credentials: true,
   })
 );
@@ -33,6 +36,7 @@ app.use(cookieParser());
 app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
+initializeSocketIo(io);
 passport.use(googleAuthStrategy);
 passport.use(facebookAuthStrategy);
 app.use("/auth", authRoute);
@@ -41,7 +45,7 @@ app.use(errorHandler);
 
 connectDb()
   .then(() => {
-    app.listen(config.port, () => {
+    httpServer.listen(config.port, () => {
       console.log(`Server is running on http://localhost:${config.port}`);
     });
   })

@@ -1,3 +1,5 @@
+import createHttpError from "http-errors";
+
 export const notFoundHandler = (req, res, next) => {
   next(createHttpError.NotFound(`Invalid endpoint-${req.originalUrl}`));
 };

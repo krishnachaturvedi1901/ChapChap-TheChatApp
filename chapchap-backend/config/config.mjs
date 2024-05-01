@@ -22,4 +22,5 @@ export const config = {
   redis_password: process.env.REDIS_PASSWORD,
   accessToken_age: process.env.ACCESSTOKEN_AGE,
   refreshToken_age: process.env.REFRESHTOKEN_AGE,
+  client_url: process.env.CLIENT_URL,
 };

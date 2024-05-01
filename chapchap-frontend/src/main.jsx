@@ -9,19 +9,20 @@ import { AuthContextProvider } from "./context/AuthContext.jsx";
 import { SnackbarProvider } from "notistack";
 import { config } from "./config/config.js";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { SocketProvider } from "./context/SocketContext.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <GoogleOAuthProvider clientId={config.googleOauth_clientId}>
-      <SnackbarProvider>
-        <Provider store={store}>
-          <AuthContextProvider>
+    <SnackbarProvider>
+      <Provider store={store}>
+        <AuthContextProvider>
+          <SocketProvider>
             <BrowserRouter>
               <App />
             </BrowserRouter>
-          </AuthContextProvider>
-        </Provider>
-      </SnackbarProvider>
-    </GoogleOAuthProvider>
+          </SocketProvider>
+        </AuthContextProvider>
+      </Provider>
+    </SnackbarProvider>
   </React.StrictMode>
 );

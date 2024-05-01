@@ -4,6 +4,18 @@ export const initializeSocketIo = (io) => {
     try {
       const cookies = cookie.parse(socket.handshake.headers?.cookie || "");
       console.log("cookies obj after connection established-", cookies);
-    } catch (error) {}
+      let token = cookies?.accessToken;
+      if (!token) {
+        token = socket.handshake.auth?.token;
+      }
+      console.log(
+        "full socketInstance after connection-",
+        socket.handshake.auth,
+        "socket.id-",
+        socket.id
+      );
+    } catch (error) {
+      console.log("socket connection error", error);
+    }
   });
 };
